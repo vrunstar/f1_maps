@@ -1,4 +1,4 @@
-# F1 Speed & Corner Maps
+# Formula 1 Speed & Corner Maps
 
 A Flask-based web application that visualizes Formula 1 telemetry data using speed maps and corner maps.
 
