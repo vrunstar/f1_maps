@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>F1 Maps</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='F1.svg') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-body: #050505;
+            --bg-sidebar: #0f1115;
+            --bg-card: rgba(22, 26, 34, 0.6);
+            --border-color: rgba(255, 255, 255, 0.08);
+
+            --text-primary: #FFFFFF;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+
+            --accent-primary: #e10600;
+            --accent-neon: #ff1e1e;
+            --accent-glow: rgba(225, 6, 0, 0.3);
+
+            --btn-gradient: linear-gradient(135deg, #e10600 0%, #b30000 100%);
+
+            --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --backdrop-blur: blur(12px);
+
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        @font-face {
+            font-family: 'F1DisplayBlack';
+            src: url('/static/fonts/Formula1-Display-Black.woff2') format('woff2'),
+                url('/static/fonts/Formula1-Display-Black.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'F1DisplayWide';
+            src: url('/static/fonts/Formula1-Display-Wide.woff2') format('woff2'),
+                url('/static/fonts/Formula1-Display-Wide.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'F1DisplayBold';
+            src: url('/static/fonts/Formula1-Display-Bold.woff2') format('woff2'),
+                url('/static/fonts/Formula1-Display-Bold.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'F1DisplayBold', sans-serif;
+            background-color: var(--bg-body);
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(225, 6, 0, 0.04) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.04) 0%, transparent 25%);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            flex-shrink: 0;
+        }
+
+        .logo-container {
+            margin-bottom: 40px;       
+            display: flex;             
+            justify-content: center;   
+            align-items: center;       
+            height: 80px;              
+        }
+
+        .logo-svg path {
+            fill: #fff;
+        }
+
+        .logo-svg .f1-red {
+            fill: var(--accent-primary);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            font-family: 'F1DisplayBold', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            background: rgba(225, 6, 0, 0.1);
+            color: var(--accent-neon);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .nav-link i {
+            font-size: 18px;
+        }
+
+        .user-profile {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-lg);
+            border: var(--glass-border);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #333;
+            background-image: url('https://i.pravatar.cc/150?img=11');
+            background-size: cover;
+        }
+
+        .user-info h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .user-info span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title h1 {
+            font-family: 'F1DisplayWide', sans-serif;
+            font-weight: bold;
+        }
+
+
+
+
+        .header-title span {
+            color: var(--text-muted);
+            font-size: 14px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .header-actions button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-left: 10px;
+            transition: 0.2s;
+        }
+
+        .header-actions button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Dashboard Grid --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            max-width: 1400px;
+        }
+
+        /* --- Config Card --- */
+        .config-card {
+            background: var(--bg-card);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        h2.card-title {
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2.card-title i {
+            color: var(--accent-neon);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 18px;
+            transition: 0.2s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(225, 6, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .session-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .session-option input {
+            display: none;
+        }
+
+        .session-option span {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .session-option input:checked+span {
+            background: rgba(225, 6, 0, 0.15);
+            border-color: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .session-option:hover span {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-generate {
+            font-family: "F1DisplayBold", sans-serif;
+            width: 100%;
+            margin-top: 30px;
+            padding: 16px;
+            border: none;
+            border-radius: var(--radius-lg);
+            background: var(--btn-gradient);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(225, 6, 0, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(225, 6, 0, 0.6);
+        }
+
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+
+        /* --- Preview Area --- */
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .preview-card {
+            background: var(--bg-card);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 6px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .preview-placeholder i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+            display: block;
+        }
+
+        .result-image {
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius-lg);
+            display: block;
+        }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 1000px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+            
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='F1.svg') }}" alt="F1 Logo" width="100" height="25">
+        </div>
+
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="/speed" class="nav-link {% if request.path == '/speed' %}active{% endif %}">
+                    <i class="ri-dashboard-line"></i>
+                    <span>Lap Speed</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/corner" class="nav-link {% if request.path == '/corner' %}active{% endif %}">
+                    <i class="ri-map-2-line"></i>
+                    <span>Circuits</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <header class="header">
+            <div class="header-title">
+                <h1>F1 Average Lap Speed</h1>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+
+            <!-- Config Column -->
+            <div class="config-wrapper">
+                <form method="post" class="config-card">
+                    <h2 class="card-title"><i class="ri-equalizer-line"></i> Parameters</h2>
+
+                    <div class="form-group">
+                        <label>Season</label>
+                        <select name="season" required>
+                            <option value="2025">2025 Season</option>
+                            <option value="2024">2024 Season</option>
+                            <option value="2023">2023 Season</option>
+                            <option value="2022">2022 Season</option>
+                            <option value="2021">2021 Season</option>
+                            <option value="2020">2020 Season</option>
+                            <option value="2019">2019 Season</option>
+                            <option value="2018">2018 Season</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Event</label>
+                        <select name="event" required>
+                            <option>Australia</option>
+                            <option>Japan</option>
+                            <option>China</option>
+                            <option>Bahrain</option>
+                            <option>Saudi Arabia</option>
+                            <option>Miami</option>
+                            <option>Emilia Romagna</option>
+                            <option>Monaco</option>
+                            <option>Spain</option>
+                            <option>Canada</option>
+                            <option>Austria</option>
+                            <option>Great Britain</option>
+                            <option>Belgium</option>
+                            <option>Hungary</option>
+                            <option>Netherlands</option>
+                            <option>Italy</option>
+                            <option>Azerbaijan</option>
+                            <option>Singapore</option>
+                            <option>United States</option>
+                            <option>Mexico City</option>
+                            <option>Brazil (São Paulo)</option>
+                            <option>Las Vegas</option>
+                            <option>Qatar</option>
+                            <option>Abu Dhabi</option>
+                            <option>France</option>
+                            <option>Germany</option>
+                            <option>Russia</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Session</label>
+                        <div class="session-grid">
+                            <label class="session-option">
+                                <input type="radio" name="session" value="R" required checked>
+                                <span>Race</span>
+                            </label>
+                            <label class="session-option">
+                                <input type="radio" name="session" value="Q">
+                                <span>Qualifying</span>
+                            </label>
+                            <label class="session-option">
+                                <input type="radio" name="session" value="FP1">
+                                <span>FP1</span>
+                            </label>
+                            <label class="session-option">
+                                <input type="radio" name="session" value="FP2">
+                                <span>FP2</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Driver</label>
+                        <select name="driver" required>
+                            <option value="ALB">Alexander Albon</option>
+                            <option value="ALO">Fernando Alonso</option>
+                            <option value="ANT">Kimi Antonelli</option>
+                            <option value="BEA">Oliver Bearman</option>
+                            <option value="BOR">Gabriel Bortoleto</option>
+                            <option value="COL">Franco Colapinto</option>
+                            <option value="GAS">Pierre Gasly</option>
+                            <option value="HAD">Isack Hadjar</option>
+                            <option value="HAM">Lewis Hamilton</option>
+                            <option value="HUL">Nico Hülkenberg</option>
+                            <option value="LAW">Liam Lawson</option>
+                            <option value="LEC">Charles Leclerc</option>
+                            <option value="NOR">Lando Norris</option>
+                            <option value="OCO">Esteban Ocon</option>
+                            <option value="PIA">Oscar Piastri</option>
+                            <option value="RUS">George Russell</option>
+                            <option value="SAI">Carlos Sainz Jr.</option>
+                            <option value="STR">Lance Stroll</option>
+                            <option value="TSU">Yuki Tsunoda</option>
+                            <option value="VER">Max Verstappen</option>
+                            <option value="DEV">Nyck de Vries</option>
+                            <option value="DOO">Jack Doohan</option>
+                            <option value="ERI">Marcus Ericsson</option>
+                            <option value="GIO">Antonio Giovinazzi</option>
+                            <option value="RIC">Daniel Ricciardo</option>
+                            <option value="SAR">Logan Sargeant</option>
+                            <option value="SIR">Sergey Sirotkin</option>
+                            <option value="VAN">Stoffel Vandoorne</option>
+                            <option value="VET">Sebastian Vettel</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-generate">
+                        Generate Map <i class="ri-arrow-right-line"
+                            style="vertical-align: middle; margin-left: 5px;"></i>
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Preview/Result Column -->
+            <div class="preview-area">
+                <div class="preview-card">
+                    {% if image_generated %}
+                    <img src="/static/output.png" alt="Speed Map" class="result-image">
+                    {% else %}
+                    <div class="preview-placeholder">
+                        <i class="ri-image-line"></i>
+                        <p>Select parameters and generate<br>to view the speed map.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>
