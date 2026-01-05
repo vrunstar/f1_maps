@@ -28,34 +28,28 @@ def speed(season, event, session_type, driver):
     points = np.array([x_rot, y_rot]).T.reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
 
-    # --- Dark theme colors ---
-    outline_lc = LineCollection(segments, colors="#111111", linewidth=14)  # dark outline
+    outline_lc = LineCollection(segments, colors="#111111", linewidth=14)
     lc = LineCollection(
         segments,
-        cmap="Reds",
+        cmap="plasma",
         norm=plt.Normalize(speed.min(), speed.max()),
         linewidth=10
     )
     lc.set_array(speed)
 
-    # --- Figure setup ---
     plt.figure(figsize=(10, 8))
     ax = plt.gca()
-    ax.set_facecolor("#050505")  # dark background like dashboard
+    ax.set_facecolor("#050505")
     ax.add_collection(outline_lc)
     ax.add_collection(lc)
     plt.axis("equal")
     plt.axis("off")
 
-    # --- Colorbar in light theme ---
     cbar = plt.colorbar(lc)
     cbar.set_label("Speed (km/h)", color="white")
     cbar.ax.yaxis.set_tick_params(color='white')
+
     plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'), color='white')
-
-    # --- Title in white ---
-    plt.title(f"{driver} ({team}) Speed Map\n{season} {event} {session_type}", color="white")
-
-    # --- Save output ---
+    plt.title(f"{session.event['OfficialEventName']}\n{driver} ({team}) {session_type} Average Lap Speed Map", color='white')
     plt.savefig("static/output.png", dpi=150, bbox_inches="tight", facecolor="#050505")
     plt.close()

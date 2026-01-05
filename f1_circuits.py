@@ -3,10 +3,7 @@ import numpy as np
 import fastf1
 
 def corner_map(season, event, session_type):
-    """
-    Generate a corner map for a given F1 session
-    and save it to static/corner_map.png
-    """
+
     session = fastf1.get_session(season, event, session_type)
     session.load()
 
@@ -24,7 +21,7 @@ def corner_map(season, event, session_type):
     rotated_track = rotate(track, angle=track_angle)
 
     plt.figure(figsize=(10, 6))
-    plt.plot(rotated_track[:, 0], rotated_track[:, 1], color='red')
+    plt.plot(rotated_track[:, 0], rotated_track[:, 1], color='#FF1801', linewidth=5)
 
     offset_vector = [500, 0]
 
@@ -39,11 +36,11 @@ def corner_map(season, event, session_type):
         text_x, text_y = rotate([text_x, text_y], angle=track_angle)
         track_x, track_y = rotate([corner['X'], corner['Y']], angle=track_angle)
 
-        plt.scatter(text_x, text_y, color='grey', s=140)
-        plt.plot([track_x, text_x], [track_y, text_y], color='grey')
-        plt.text(text_x, text_y, txt, va='center_baseline', ha='center', size='small', color='white')
+        plt.scatter(text_x, text_y, color='white', s=140)
+        plt.plot([track_x, text_x], [track_y, text_y], color='#ffffff')
+        plt.text(text_x, text_y, txt, va='center_baseline', ha='center', size='small', color='#050505')
 
-    plt.title(session.event['Location'], color='white')
+    plt.title(f"{session.RoundNumber} {session.event['OfficialEventName']}\n{session.event['Location']}, {session.event['Country']}", color='white')
     plt.xticks([])
     plt.yticks([])
     plt.axis('equal')
