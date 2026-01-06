@@ -1,7 +1,11 @@
 import os
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import fastf1
+
+# Use a non-GUI backend so this works safely inside Flask / non-main threads.
+matplotlib.use("Agg")
 
 
 def corner_map(season, event, session_type):

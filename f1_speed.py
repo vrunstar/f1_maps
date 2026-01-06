@@ -1,8 +1,13 @@
 import os
 import fastf1
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
+
+# Use a non-GUI backend so this works safely inside Flask / non-main threads.
+matplotlib.use("Agg")
+
 
 def speed(season, event, session_type, driver):
     cache_dir = "cache"
